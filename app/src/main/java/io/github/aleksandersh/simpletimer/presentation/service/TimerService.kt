@@ -78,9 +78,13 @@ class TimerService : Service() {
         startForeground(NOTIFICATION_ID, notification)
     }
 
-    private fun startTimer(time: Long) {
+    private fun startService(time: Long) {
         started = true
         makeForeground()
+        startTimer(time)
+    }
+
+    private fun startTimer(time: Long) {
         timerDisposable?.dispose()
         currentTime.set(time)
         timerRepository.setTime(time)
@@ -89,11 +93,15 @@ class TimerService : Service() {
             .subscribe { onNextTick() }
     }
 
-    private fun stopTimer() {
+    private fun stopService() {
         started = false
-        timerDisposable?.dispose()
+        stopTimer()
         stopForeground(true)
         stopSelf()
+    }
+
+    private fun stopTimer() {
+        timerDisposable?.dispose()
     }
 
     private fun onNextTick() {
@@ -112,16 +120,16 @@ class TimerService : Service() {
 
         fun start(time: Long) {
             if (!checkServiceStarted()) {
-                startTimer(time)
+                startService(time)
             }
         }
 
         fun restart(time: Long) {
-            startTimer(time)
+            startService(time)
         }
 
         fun stop() {
-            stopTimer()
+            stopService()
         }
 
         fun addTime(time: Long) {
