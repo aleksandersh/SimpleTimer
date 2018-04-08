@@ -1,0 +1,37 @@
+buildscript {
+    ext.kotlin_version = '1.2.31'
+    ext.gradle_version = '3.1.0'
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:$gradle_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    ext.versions = [
+            support          : '27.1.0',
+            constraint_layout: '1.1.0-beta6',
+            rxjava2          : '2.1.9',
+            rxandroid        : '2.0.1',
+            moxy             : '1.5.3',
+            dagger2          : '2.13',
+            junit            : '4.12',
+            tests_runner     : '1.0.1',
+            espresso         : '3.0.1',
+            mockito          : '2.15.0',
+            mockito_kotlin   : '1.5.0'
+    ]
+
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

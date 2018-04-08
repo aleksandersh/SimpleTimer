@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Простой Таймер</string>
+
+    <string name="main_add_time_title">Дополнительное время!</string>
+    <string name="main_finish_dialog_title">Время вышло</string>
+    <string name="main_finish_dialog_message">Завершить приложение?</string>
+    <string name="main_finish_dialog_retry">Повторить</string>
+    <string name="main_finish_dialog_finish">Завершить</string>
+    <plurals name="main_click_count">
+        <item quantity="one">%d клик</item>
+        <item quantity="few">%d клика</item>
+        <item quantity="many">%d кликов</item>
+    </plurals>
+
+    <string name="timer_notification_channel_name">Таймер</string>
+    <string name="timer_notification_title">Таймер</string>
+</resources>

@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Simple Timer</string>
+
+    <string name="main_add_time_title">Add additional time</string>
+    <string name="main_finish_dialog_title">Time\'s up</string>
+    <string name="main_finish_dialog_message">Finish the app?</string>
+    <string name="main_finish_dialog_retry">Retry</string>
+    <string name="main_finish_dialog_finish">Finish</string>
+    <plurals name="main_click_count">
+        <item quantity="one">%d click</item>
+        <item quantity="other">%d clicks</item>
+    </plurals>
+
+    <string name="timer_notification_channel_name">Timer</string>
+    <string name="timer_notification_title">Timer</string>
+</resources>
