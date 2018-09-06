@@ -24,7 +24,7 @@ class TimerService : Service() {
 
     companion object {
 
-        private const val NOTIFICATION_ID = 1
+        private const val NOTIFICATION_ID = 1010
         private const val NOTIFICATION_CHANNEL_ID =
             "io.github.aleksandersh.simpletimer.TimerService.notification_channel"
     }
@@ -46,8 +46,7 @@ class TimerService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
-        return Service.START_NOT_STICKY
+        return Service.START_STICKY
     }
 
     override fun onDestroy() {
@@ -63,17 +62,23 @@ class TimerService : Service() {
     private fun makeForeground() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
-                getString(R.string.timer_notification_channel_name),
                 NOTIFICATION_CHANNEL_ID,
+                getString(R.string.timer_notification_channel_name),
                 NotificationManager.IMPORTANCE_DEFAULT
             )
+            notificationChannel.description =
+                    getString(R.string.timer_notification_channel_description)
             val notificationManager = applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(notificationChannel)
         }
         val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+            .setOngoing(true)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
-            .setContentText(getString(R.string.timer_notification_title))
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(getString(R.string.timer_notification_title))
+            .setContentText(getString(R.string.timer_notification_text))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
         startForeground(NOTIFICATION_ID, notification)
     }
