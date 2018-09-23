@@ -8,52 +8,33 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.support.v4.app.NotificationCompat
+import androidx.core.app.NotificationCompat
 import io.github.aleksandersh.simpletimer.R
-import io.github.aleksandersh.simpletimer.data.TimerRepository
-import io.github.aleksandersh.simpletimer.di.DI
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicLong
-import javax.inject.Inject
 
 class TimerService : Service() {
 
     companion object {
 
-        private const val NOTIFICATION_ID = 1
+        private const val NOTIFICATION_ID = 1010
         private const val NOTIFICATION_CHANNEL_ID =
             "io.github.aleksandersh.simpletimer.TimerService.notification_channel"
     }
 
-    @Inject
-    internal lateinit var timerRepository: TimerRepository
-
-    private val currentTime: AtomicLong = AtomicLong(0)
-    @Volatile
-    private var timerDisposable: Disposable? = null
+    private var timer: TimerImpl? = null
     private var started: Boolean = false
+
+    private var listener: ((Int) -> Unit)? = null
 
     override fun onBind(intent: Intent): IBinder = TimerBinder()
 
-    override fun onCreate() {
-        super.onCreate()
-
-        DI.applicationComponent.inject(this)
-    }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
-        return Service.START_NOT_STICKY
+        return Service.START_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        timerDisposable?.dispose()
+        timer?.stop()
     }
 
     private fun checkServiceStarted(): Boolean {
@@ -63,34 +44,39 @@ class TimerService : Service() {
     private fun makeForeground() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
-                getString(R.string.timer_notification_channel_name),
                 NOTIFICATION_CHANNEL_ID,
+                getString(R.string.timer_notification_channel_name),
                 NotificationManager.IMPORTANCE_DEFAULT
             )
+            notificationChannel.description =
+                    getString(R.string.timer_notification_channel_description)
             val notificationManager = applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(notificationChannel)
         }
         val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+            .setOngoing(true)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
-            .setContentText(getString(R.string.timer_notification_title))
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(getString(R.string.timer_notification_title))
+            .setContentText(getString(R.string.timer_notification_text))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
         startForeground(NOTIFICATION_ID, notification)
     }
 
-    private fun startService(time: Long) {
+    private fun startService(time: Int) {
         started = true
         makeForeground()
         startTimer(time)
     }
 
-    private fun startTimer(time: Long) {
-        timerDisposable?.dispose()
-        currentTime.set(time)
-        timerRepository.setTime(time)
-        timerDisposable = Observable.interval(1000, TimeUnit.MILLISECONDS, Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { onNextTick() }
+    private fun startTimer(time: Int) {
+        timer?.stop()
+        val newTimer = TimerImpl()
+        newTimer.setTickListener { newTime -> listener?.invoke(newTime) }
+        newTimer.start(time)
+        timer = newTimer
     }
 
     private fun stopService() {
@@ -101,30 +87,22 @@ class TimerService : Service() {
     }
 
     private fun stopTimer() {
-        timerDisposable?.dispose()
+        timer?.stop()
     }
 
-    private fun onNextTick() {
-        changeTime(-1)
-    }
-
-    private fun changeTime(delta: Long) {
-        val newTime = currentTime.addAndGet(delta)
-        timerRepository.setTime(newTime)
-        if (newTime <= 0) {
-            stopTimer()
-        }
+    private fun changeTime(delta: Int) {
+        timer?.add(delta)
     }
 
     inner class TimerBinder : Binder() {
 
-        fun start(time: Long) {
+        fun start(time: Int) {
             if (!checkServiceStarted()) {
                 startService(time)
             }
         }
 
-        fun restart(time: Long) {
+        fun restart(time: Int) {
             startService(time)
         }
 
@@ -132,8 +110,12 @@ class TimerService : Service() {
             stopService()
         }
 
-        fun addTime(time: Long) {
+        fun addTime(time: Int) {
             changeTime(time)
+        }
+
+        fun setTimerListener(listener: ((Int) -> Unit)?) {
+            this@TimerService.listener = listener
         }
     }
 }

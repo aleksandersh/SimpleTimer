@@ -11,6 +11,8 @@
         <item quantity="other">%d clicks</item>
     </plurals>
 
-    <string name="timer_notification_channel_name">Timer</string>
-    <string name="timer_notification_title">Timer</string>
+    <string name="timer_notification_channel_name">Simple Timer</string>
+    <string name="timer_notification_channel_description">Simple Timer test app service</string>
+    <string name="timer_notification_title">Simple Timer</string>
+    <string name="timer_notification_text">Started</string>
 </resources>
