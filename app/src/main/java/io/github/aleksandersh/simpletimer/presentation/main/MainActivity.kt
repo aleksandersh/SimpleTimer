@@ -65,7 +65,9 @@ class MainActivity : MvpAppCompatActivity(), MainView, ServiceConnection {
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder) {
-        boundService = service as TimerService.TimerBinder
+        service as TimerService.TimerBinder
+        service.setTimerListener(presenter::onNextTimerTick)
+        boundService = service
         presenter.onServiceConnected()
     }
 
@@ -94,6 +96,7 @@ class MainActivity : MvpAppCompatActivity(), MainView, ServiceConnection {
     }
 
     override fun unbindTimerService() {
+        boundService?.setTimerListener(null)
         unbindService(this)
     }
 

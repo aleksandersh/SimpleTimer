@@ -10,9 +10,6 @@ import android.os.Build
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import io.github.aleksandersh.simpletimer.R
-import io.github.aleksandersh.simpletimer.data.TimerRepository
-import io.github.aleksandersh.simpletimer.di.DI
-import javax.inject.Inject
 
 class TimerService : Service() {
 
@@ -23,19 +20,12 @@ class TimerService : Service() {
             "io.github.aleksandersh.simpletimer.TimerService.notification_channel"
     }
 
-    @Inject
-    internal lateinit var timerRepository: TimerRepository
-
     private var timer: TimerImpl? = null
     private var started: Boolean = false
 
+    private var listener: ((Int) -> Unit)? = null
+
     override fun onBind(intent: Intent): IBinder = TimerBinder()
-
-    override fun onCreate() {
-        super.onCreate()
-
-        DI.applicationComponent.inject(this)
-    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         return Service.START_STICKY
@@ -84,9 +74,7 @@ class TimerService : Service() {
     private fun startTimer(time: Int) {
         timer?.stop()
         val newTimer = TimerImpl()
-        newTimer.setTickListener { newTime ->
-            timerRepository.setTime(newTime)
-        }
+        newTimer.setTickListener { newTime -> listener?.invoke(newTime) }
         newTimer.start(time)
         timer = newTimer
     }
@@ -124,6 +112,10 @@ class TimerService : Service() {
 
         fun addTime(time: Int) {
             changeTime(time)
+        }
+
+        fun setTimerListener(listener: ((Int) -> Unit)?) {
+            this@TimerService.listener = listener
         }
     }
 }

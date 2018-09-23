@@ -3,15 +3,10 @@ package io.github.aleksandersh.simpletimer.presentation.main
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import io.github.aleksandersh.simpletimer.R
-import io.github.aleksandersh.simpletimer.data.TimerRepository
 import io.github.aleksandersh.simpletimer.presentation.util.ResourceManager
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 
 @InjectViewState
 class MainPresenter(
-    private val timerRepository: TimerRepository,
     private val resourceManager: ResourceManager
 ) : MvpPresenter<MainView>() {
 
@@ -21,17 +16,10 @@ class MainPresenter(
         private const val ADDITIONAL_TIME_SEC = 5
     }
 
-    private var counterDisposable: Disposable? = null
-
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
 
         viewState.startTimerService()
-        observeTime()
-    }
-
-    override fun onDestroy() {
-        counterDisposable?.dispose()
     }
 
     fun onResume() {
@@ -62,12 +50,8 @@ class MainPresenter(
         viewState.finishApplication()
     }
 
-    private fun observeTime() {
-        counterDisposable = timerRepository.observeTime()
-            .subscribeOn(Schedulers.computation())
-            .distinctUntilChanged()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(::handleTime)
+    fun onNextTimerTick(tick: Int) {
+        handleTime(tick)
     }
 
     private fun handleTime(time: Int) {
