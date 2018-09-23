@@ -6,8 +6,8 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import io.github.aleksandersh.simpletimer.R
 import io.github.aleksandersh.simpletimer.presentation.service.TimerService
 import kotlinx.android.synthetic.main.activity_main.*

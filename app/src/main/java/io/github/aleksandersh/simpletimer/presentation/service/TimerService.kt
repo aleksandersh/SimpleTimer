@@ -8,7 +8,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.support.v4.app.NotificationCompat
+import androidx.core.app.NotificationCompat
 import io.github.aleksandersh.simpletimer.R
 
 class TimerService : Service() {
