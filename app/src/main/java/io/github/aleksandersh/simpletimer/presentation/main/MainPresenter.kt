@@ -17,8 +17,8 @@ class MainPresenter(
 
     companion object {
 
-        private const val START_TIME_SEC = 20L
-        private const val ADDITIONAL_TIME_SEC = 5L
+        private const val START_TIME_SEC = 20
+        private const val ADDITIONAL_TIME_SEC = 5
     }
 
     private var counterDisposable: Disposable? = null
@@ -70,14 +70,14 @@ class MainPresenter(
             .subscribe(::handleTime)
     }
 
-    private fun handleTime(time: Long) {
+    private fun handleTime(time: Int) {
         showTime(time)
         if (time <= 0) {
             showFinishDialog()
         }
     }
 
-    private fun showTime(time: Long) {
+    private fun showTime(time: Int) {
         viewState.setTimerText(time.toString())
     }
 

@@ -22,11 +22,11 @@ interface MainView : MvpView {
 
     fun unbindTimerService()
 
-    fun startTimer(time: Long)
+    fun startTimer(time: Int)
 
-    fun restartTimer(time: Long)
+    fun restartTimer(time: Int)
 
-    fun addTime(time: Long)
+    fun addTime(time: Int)
 
     fun finishApplication()
 

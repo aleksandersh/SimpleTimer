@@ -97,15 +97,15 @@ class MainActivity : MvpAppCompatActivity(), MainView, ServiceConnection {
         unbindService(this)
     }
 
-    override fun startTimer(time: Long) {
+    override fun startTimer(time: Int) {
         boundService?.start(time)
     }
 
-    override fun restartTimer(time: Long) {
+    override fun restartTimer(time: Int) {
         boundService?.restart(time)
     }
 
-    override fun addTime(time: Long) {
+    override fun addTime(time: Int) {
         boundService?.addTime(time)
     }
 

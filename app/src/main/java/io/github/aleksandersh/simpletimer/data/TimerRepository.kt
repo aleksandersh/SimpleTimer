@@ -4,7 +4,7 @@ import io.reactivex.Observable
 
 interface TimerRepository {
 
-    fun setTime(time: Long)
+    fun setTime(time: Int)
 
-    fun observeTime(): Observable<Long>
+    fun observeTime(): Observable<Int>
 }
